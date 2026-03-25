@@ -1,4 +1,8 @@
 @import "tailwindcss";
+
+@theme {
+	--font-sans: "Noto Sans TC", ui-sans-serif, system-ui, sans-serif;
+}
 /* tailwind to ignore satori generated og-image */
 @source not "../pages/og-image";
 /* config for tailwindcss-typography plugin */
