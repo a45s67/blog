@@ -6,7 +6,7 @@ tags: ["CTF"]
 ---
 
 
-# first-flag(有點忘記，應該是叫這名子沒錯)
+## first-flag(有點忘記，應該是叫這名子沒錯)
 隨便輸入一串 user，登入後會要你輸入 flag，超過 5 分會給你這一題的 flag
 ![](https://files.sakana.tw/blog/DEVCORE-Wargame-2023/first-flag-1.png)
 ![](https://files.sakana.tw/blog/DEVCORE-Wargame-2023/first-flag-2.png)
@@ -50,7 +50,7 @@ eyJ1c2VyIjoiYWRtaW4iLCJleHAiOjE2OTI0MjgyNjV98727389e2f8e138d34d215e16affb60fb4b7
 {"user":"admin","exp":1692428265}^߇vחoo]
 
 ```
-# redpill
+## redpill
 題目給了一個沒任何說明的檔案 [redpill](https://files.sakana.tw/blog/DEVCORE-Wargame-2023/redpill)
 依據經驗，我猜這是一個逆向題(??)，先收集一下資訊
 ``` bash
@@ -94,7 +94,7 @@ ACCESS CODE:
 1. 靜態分析
 2. 把這個 MBR 檔案執行起來，動態分析
 
-## 靜態分析 1
+### 靜態分析 1
 在這邊我使用 radare2 做逆向
 > 為啥不用 IDA Pro？因為手邊剛好只有 IDA free...，開不了 PE 以外的東西🥹。
 > 我的做人，我的作法，沒錢的人，沒錢的做法。爬了一下文，感覺 radare2 可以試試就拿來上了，
@@ -103,7 +103,7 @@ ACCESS CODE:
 ![](https://files.sakana.tw/blog/DEVCORE-Wargame-2023/redpill-1.png)
 可以看到，斷在 0xffffffff8966e402 不知道這什麼地方。(其實這邊我 decompiler 的設定有誤，後面會說明)
 
-## 動態分析 - 載入 MBR
+### 動態分析 - 載入 MBR
 爬了超久，關於怎麼載入、debug MBR 的資訊，因為一開始不知道要下哪些關鍵字，找到的內容都很瑣碎，重複嘗試了三個晚上。
 最後主要是透過下面這幾篇的說明，我才搞懂要怎麼使用模擬器載入一個 MBR。
 - [Debugging MBR - IDA + Bochs Emulator (CTF example)](https://github.com/Dump-GUY/Malware-analysis-and-Reverse-engineering/blob/main/Debugging%20MBR%20-%20IDA%20+%20Bochs%20Emulator/Debugging%20MBR%20-%20IDA%20+%20Bochs%20Emulator.md)
@@ -134,7 +134,7 @@ with open('redpill.img', 'r+b') as f:
 4. 開始 debug image 的載入 `bochsdbg.exe -f bochsrc.bxrc`
 ![終於成功載入](https://files.sakana.tw/blog/DEVCORE-Wargame-2023/redpill-2.png)
 
-## 靜態分析 2 
+### 靜態分析 2 
 參考[Solving the Disobey 2020 puzzle bootloader using Unicorn and Ghidra](https://jarijaas.github.io/posts/disobey-2020/)
 觀察 bochs dbg diasm 後的內容，確認了 "靜態分析 - 1" 中幾件我搞錯的事
 - radare2 的 cpu 模式要設成 16 bits 才對，boot 的時候 CPU 是 real mode
@@ -161,7 +161,7 @@ with open('redpill.img', 'r+b') as f:
 - [分段架構: Segment Selectors 和分段暫存器](https://www.csie.ntu.edu.tw/~wcchen/asm98/asm/proj/b85506061/chap2/segment.html)
 
 
-## 靜態分析 3
+### 靜態分析 3
 接下來進行 0x200 的分析，並嘗試快速定位 flag 的判斷位置。
 ![](https://files.sakana.tw/blog/DEVCORE-Wargame-2023/redpill-5.png)
 當 flag 輸入錯誤時，會顯示 ACCESS DENY 的文字。而 ACCESS DENY 在 file offset 0x745 (應對應 memory 0x6545)。
@@ -178,7 +178,7 @@ with open('redpill.img', 'r+b') as f:
 ![](https://files.sakana.tw/blog/DEVCORE-Wargame-2023/redpill-9.png)
 ![](https://files.sakana.tw/blog/DEVCORE-Wargame-2023/redpill-8.png)
 
-## 動態 + 靜態分析 4
+### 動態 + 靜態分析 4
 為了確認 `0x6585`、`0x65af` 這兩個 buf 在 runtime 進行處理、比對時的內容，直接在進入比對前的 `0x6097` 下斷點。
 檢查這時的 buf 內容，可見 `0x6585` 為使用者的輸入內容，`0x65af` 為 secret，跟靜態分析時的內容相同。
 ![](https://files.sakana.tw/blog/DEVCORE-Wargame-2023/redpill-10.png)
@@ -229,5 +229,5 @@ print(''.join(flag_reorder))
 
 
 
-# 其他題
+## 其他題
 沒解到就關了，88
