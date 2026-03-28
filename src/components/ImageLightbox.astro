@@ -1,0 +1,85 @@
+<div id="lightbox-overlay" class="lightbox-overlay"></div>
+
+<style>
+	.lightbox-overlay {
+		position: fixed;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.8);
+		z-index: 9998;
+		opacity: 0;
+		pointer-events: none;
+		transition: opacity 0.3s ease;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	.lightbox-overlay.active {
+		opacity: 1;
+		pointer-events: auto;
+	}
+	.lightbox-overlay img {
+		max-width: 95vw;
+		max-height: 95vh;
+		object-fit: contain;
+		cursor: zoom-out;
+	}
+</style>
+
+<script>
+	function setupLightbox() {
+		const overlay = document.getElementById("lightbox-overlay")!;
+		let activeImg: HTMLImageElement | null = null;
+		let placeholder: HTMLElement | null = null;
+
+		document.querySelectorAll("article img, .prose img").forEach((img) => {
+			const el = img as HTMLImageElement;
+			el.style.cursor = "zoom-in";
+			el.addEventListener("click", () => {
+				if (activeImg) return close();
+				open(el);
+			});
+		});
+
+		overlay.addEventListener("click", (e) => {
+			if (e.target === overlay) close();
+		});
+		document.addEventListener("keydown", (e) => {
+			if (e.key === "Escape" && activeImg) close();
+		});
+
+		function open(img: HTMLImageElement) {
+			activeImg = img;
+
+			// Insert placeholder to preserve layout
+			placeholder = document.createElement("div");
+			placeholder.style.width = img.offsetWidth + "px";
+			placeholder.style.height = img.offsetHeight + "px";
+			img.parentElement!.insertBefore(placeholder, img);
+
+			// Move img into overlay
+			overlay.appendChild(img);
+			img.style.cursor = "zoom-out";
+			img.addEventListener("click", close, { once: true });
+
+			overlay.classList.add("active");
+		}
+
+		function close() {
+			if (!activeImg || !placeholder) return;
+			const img = activeImg;
+			activeImg = null;
+
+			overlay.classList.remove("active");
+
+			// Move img back to original position
+			placeholder.parentElement!.insertBefore(img, placeholder);
+			placeholder.remove();
+			placeholder = null;
+
+			img.style.cursor = "zoom-in";
+		}
+	}
+
+	setupLightbox();
+	document.addEventListener("astro:after-swap", setupLightbox);
+</script>
