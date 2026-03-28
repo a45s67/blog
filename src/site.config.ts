@@ -3,7 +3,7 @@ import type { SiteConfig } from "@/types";
 
 export const siteConfig: SiteConfig = {
 	url: "https://sakana.tw",
-	title: "FlyFish's Blog",
+	title: "Fish's Blog",
 	author: "Fish Yu",
 	description: "Fish Yu 的個人部落格，記錄 CTF、逆向工程、工具與工作流程的心得。",
 	lang: "zh-TW",
@@ -38,8 +38,7 @@ export const menuLinks: { path: string; title: string }[] = [
 export const expressiveCodeOptions: AstroExpressiveCodeOptions = {
 	styleOverrides: {
 		borderRadius: "4px",
-		codeFontFamily:
-			'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+		codeFontFamily: "var(--font-mono)",
 		codeFontSize: "0.875rem",
 		codeLineHeight: "1.7142857rem",
 		codePaddingInline: "1rem",
