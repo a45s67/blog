@@ -105,9 +105,6 @@
 		scroll-margin-block: 5ex;
 	}
 
-	@view-transition {
-		navigation: auto;
-	}
 
 	/* Astro image responsive styles, modified from -> https://docs.astro.build/en/guides/images/#responsive-image-styles */
 	:where([data-astro-image]) {
