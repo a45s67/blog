@@ -22,14 +22,16 @@ const {
 		<ThemeProvider />
 	</head>
 	<body
-		class="bg-global-bg text-global-text mx-auto flex min-h-screen max-w-3xl flex-col px-4 pt-16 font-sans text-sm font-normal antialiased sm:px-8"
+		class="bg-global-bg/90 text-global-text min-h-screen font-sans text-sm font-normal antialiased "
 	>
-		<SkipLink />
-		<Header />
-		<main id="main">
-			<slot />
-		</main>
-		<Footer />
+		<div class="mx-auto flex min-h-screen max-w-3xl flex-col px-4 pt-16 sm:px-8 backdrop-blur-xs">
+			<SkipLink />
+			<Header />
+			<main id="main">
+				<slot />
+			</main>
+			<Footer />
+		</div>
 		<script is:inline type="speculationrules">
 			{
 				"prefetch": [

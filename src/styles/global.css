@@ -67,6 +67,11 @@
 		color-scheme: light dark;
 		accent-color: var(--color-accent);
 		scrollbar-gutter: stable;
+		background-image: url("https://files.sakana.tw/blog/Theme/bg-eris.png");
+		background-size: cover;
+		background-position: center;
+		background-attachment: fixed;
+		background-repeat: no-repeat;
 
 		&[data-theme="light"] {
 			color-scheme: light;

@@ -1,0 +1,217 @@
+<theme-color-picker class="ms-1 sm:ms-2">
+	<button
+		class="hover:text-accent relative h-9 w-9 cursor-pointer rounded-md p-2"
+		type="button"
+		title="Theme Color"
+	>
+		<span class="sr-only">Theme Color</span>
+		<svg
+			aria-hidden="true"
+			class="h-5 w-5"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="1.5"
+			viewBox="0 0 24 24"
+			xmlns="http://www.w3.org/2000/svg"
+		>
+			<path
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				d="M4.098 19.902a3.75 3.75 0 0 0 5.304 0l6.401-6.402M6.75 21A3.75 3.75 0 0 1 3 17.25V4.125C3 3.504 3.504 3 4.125 3h5.25C9.996 3 10.5 3.504 10.5 4.125v4.5a.75.75 0 0 0 .75.75h4.5c.621 0 1.125.504 1.125 1.125v5.25A3.75 3.75 0 0 1 13.125 19.5h-.375"
+			></path>
+			<circle cx="7.5" cy="7.5" r="1.5" fill="currentColor"></circle>
+		</svg>
+	</button>
+	<div
+		class="bg-global-bg border-muted absolute top-12 right-0 z-50 hidden rounded-lg border p-3 shadow-lg"
+		id="color-picker-panel"
+	>
+		<p class="text-muted mb-2 text-xs font-semibold">Theme Color</p>
+		<div class="flex gap-2" id="color-swatches"></div>
+	</div>
+</theme-color-picker>
+
+<script>
+	class ThemeColorPicker extends HTMLElement {
+		// Each preset defines light + dark mode accent/link/quote colors
+		static presets: Record<
+			string,
+			{
+				swatch: string;
+				light: Record<string, string>;
+				dark: Record<string, string>;
+			}
+		> = {
+			red: {
+				swatch: "oklch(55.27% 0.195 19.06)",
+				light: {
+					"--color-accent": "oklch(55.27% 0.195 19.06)",
+					"--color-link": "oklch(55.44% 0.0431 185.69)",
+					"--color-quote": "oklch(55.27% 0.195 19.06)",
+				},
+				dark: {
+					"--color-accent": "oklch(76% 0.11 235)",
+					"--color-link": "oklch(78% 0.08 245)",
+					"--color-quote": "oklch(90% 0.08 230)",
+				},
+			},
+			blue: {
+				swatch: "oklch(55% 0.18 250)",
+				light: {
+					"--color-accent": "oklch(55% 0.18 250)",
+					"--color-link": "oklch(50% 0.12 250)",
+					"--color-quote": "oklch(55% 0.18 250)",
+				},
+				dark: {
+					"--color-accent": "oklch(76% 0.11 250)",
+					"--color-link": "oklch(78% 0.08 250)",
+					"--color-quote": "oklch(90% 0.08 250)",
+				},
+			},
+			purple: {
+				swatch: "oklch(55% 0.18 300)",
+				light: {
+					"--color-accent": "oklch(55% 0.18 300)",
+					"--color-link": "oklch(50% 0.12 300)",
+					"--color-quote": "oklch(55% 0.18 300)",
+				},
+				dark: {
+					"--color-accent": "oklch(76% 0.11 300)",
+					"--color-link": "oklch(78% 0.08 300)",
+					"--color-quote": "oklch(90% 0.08 300)",
+				},
+			},
+			green: {
+				swatch: "oklch(55% 0.18 150)",
+				light: {
+					"--color-accent": "oklch(55% 0.18 150)",
+					"--color-link": "oklch(50% 0.12 150)",
+					"--color-quote": "oklch(55% 0.18 150)",
+				},
+				dark: {
+					"--color-accent": "oklch(76% 0.11 150)",
+					"--color-link": "oklch(78% 0.08 150)",
+					"--color-quote": "oklch(90% 0.08 150)",
+				},
+			},
+			orange: {
+				swatch: "oklch(60% 0.16 55)",
+				light: {
+					"--color-accent": "oklch(60% 0.16 55)",
+					"--color-link": "oklch(55% 0.12 55)",
+					"--color-quote": "oklch(60% 0.16 55)",
+				},
+				dark: {
+					"--color-accent": "oklch(76% 0.11 55)",
+					"--color-link": "oklch(78% 0.08 55)",
+					"--color-quote": "oklch(90% 0.08 55)",
+				},
+			},
+			pink: {
+				swatch: "oklch(60% 0.18 350)",
+				light: {
+					"--color-accent": "oklch(60% 0.18 350)",
+					"--color-link": "oklch(55% 0.12 350)",
+					"--color-quote": "oklch(60% 0.18 350)",
+				},
+				dark: {
+					"--color-accent": "oklch(76% 0.11 350)",
+					"--color-link": "oklch(78% 0.08 350)",
+					"--color-quote": "oklch(90% 0.08 350)",
+				},
+			},
+		};
+
+		connectedCallback() {
+			const button = this.querySelector<HTMLButtonElement>("button");
+			const panel = this.querySelector<HTMLDivElement>("#color-picker-panel");
+			const swatchContainer = this.querySelector<HTMLDivElement>("#color-swatches");
+
+			if (!button || !panel || !swatchContainer) return;
+
+			// Build swatches
+			for (const [name, preset] of Object.entries(ThemeColorPicker.presets)) {
+				const swatch = document.createElement("button");
+				swatch.type = "button";
+				swatch.title = name;
+				swatch.className =
+					"h-7 w-7 rounded-full cursor-pointer border-2 border-transparent hover:scale-110 transition-transform";
+				swatch.style.backgroundColor = preset.swatch;
+
+				const stored = localStorage.getItem("theme-color");
+				if (stored === name) {
+					swatch.classList.remove("border-transparent");
+					swatch.classList.add("border-global-text", "ring-2", "ring-offset-1");
+				}
+
+				swatch.addEventListener("click", () => {
+					this.applyPreset(name);
+					// Update selected state
+					swatchContainer.querySelectorAll("button").forEach((b) => {
+						b.classList.remove("border-global-text", "ring-2", "ring-offset-1");
+						b.classList.add("border-transparent");
+					});
+					swatch.classList.remove("border-transparent");
+					swatch.classList.add("border-global-text", "ring-2", "ring-offset-1");
+				});
+
+				swatchContainer.appendChild(swatch);
+			}
+
+			// Toggle panel
+			button.addEventListener("click", (e) => {
+				e.stopPropagation();
+				panel.classList.toggle("hidden");
+			});
+
+			// Close on outside click
+			document.addEventListener("click", (e) => {
+				if (!this.contains(e.target as Node)) {
+					panel.classList.add("hidden");
+				}
+			});
+
+			// Restore saved color on load
+			const saved = localStorage.getItem("theme-color");
+			if (saved && ThemeColorPicker.presets[saved]) {
+				this.applyPreset(saved);
+			}
+
+			// Re-apply on theme (light/dark) change
+			document.addEventListener("theme-change", () => {
+				// Small delay to let data-theme attribute update first
+				requestAnimationFrame(() => {
+					const saved = localStorage.getItem("theme-color");
+					if (saved && ThemeColorPicker.presets[saved]) {
+						this.applyPreset(saved);
+					}
+				});
+			});
+
+			// Re-apply after view transitions
+			document.addEventListener("astro:after-swap", () => {
+				const saved = localStorage.getItem("theme-color");
+				if (saved && ThemeColorPicker.presets[saved]) {
+					this.applyPreset(saved);
+				}
+			});
+		}
+
+		applyPreset(name: string) {
+			const preset = ThemeColorPicker.presets[name];
+			if (!preset) return;
+
+			const root = document.documentElement;
+			const isDark = root.getAttribute("data-theme") === "dark";
+			const colors = isDark ? preset.dark : preset.light;
+
+			for (const [prop, value] of Object.entries(colors)) {
+				root.style.setProperty(prop, value);
+			}
+
+			localStorage.setItem("theme-color", name);
+		}
+	}
+
+	customElements.define("theme-color-picker", ThemeColorPicker);
+</script>
