@@ -82,10 +82,10 @@
 			--color-global-bg: oklch(23.64% 0.0045 248);
 			--color-global-text: oklch(83.54% 0 264);
 			--color-muted: oklch(70.7% 0.022 261.325);
-			--color-link: oklch(78% 0.08 245);
-			--color-accent: oklch(76% 0.11 235);
+			--color-link: oklch(78% 0.08 350);
+			--color-accent: oklch(76% 0.11 350);
 			--color-accent-2: oklch(94.66% 0 0);
-			--color-quote: oklch(90% 0.08 230);
+			--color-quote: oklch(90% 0.08 350);
 		}
 
 		--color-mode-transition-duration: 300ms;

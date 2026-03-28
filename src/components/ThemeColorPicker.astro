@@ -1,162 +1,84 @@
 <theme-color-picker class="ms-1 sm:ms-2">
 	<button
-		class="hover:text-accent relative h-9 w-9 cursor-pointer rounded-md p-2"
+		class="hover:text-accent flex h-9 w-9 cursor-pointer items-center justify-center rounded-md"
 		type="button"
 		title="Theme Color"
 	>
 		<span class="sr-only">Theme Color</span>
 		<svg
-			aria-hidden="true"
-			class="h-5 w-5"
-			fill="none"
-			stroke="currentColor"
-			stroke-width="1.5"
-			viewBox="0 0 24 24"
-			xmlns="http://www.w3.org/2000/svg"
+			class="h-7 w-7"
+			data-icon="material-symbols:palette-outline"
 		>
-			<path
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				d="M4.098 19.902a3.75 3.75 0 0 0 5.304 0l6.401-6.402M6.75 21A3.75 3.75 0 0 1 3 17.25V4.125C3 3.504 3.504 3 4.125 3h5.25C9.996 3 10.5 3.504 10.5 4.125v4.5a.75.75 0 0 0 .75.75h4.5c.621 0 1.125.504 1.125 1.125v5.25A3.75 3.75 0 0 1 13.125 19.5h-.375"
-			></path>
-			<circle cx="7.5" cy="7.5" r="1.5" fill="currentColor"></circle>
+			<symbol id="ai:material-symbols:palette-outline" viewBox="0 0 24 24"
+				><path
+					fill="currentColor"
+					d="M12 22q-2.05 0-3.875-.788t-3.187-2.15t-2.15-3.187T2 12q0-2.075.813-3.9t2.2-3.175T8.25 2.788T12.2 2q2 0 3.775.688t3.113 1.9t2.125 2.875T22 11.05q0 2.875-1.75 4.413T16 17h-1.85q-.225 0-.312.125t-.088.275q0 .3.375.863t.375 1.287q0 1.25-.687 1.85T12 22m-5.5-9q.65 0 1.075-.425T8 11.5t-.425-1.075T6.5 10t-1.075.425T5 11.5t.425 1.075T6.5 13m3-4q.65 0 1.075-.425T11 7.5t-.425-1.075T9.5 6t-1.075.425T8 7.5t.425 1.075T9.5 9m5 0q.65 0 1.075-.425T16 7.5t-.425-1.075T14.5 6t-1.075.425T13 7.5t.425 1.075T14.5 9m3 4q.65 0 1.075-.425T19 11.5t-.425-1.075T17.5 10t-1.075.425T16 11.5t.425 1.075T17.5 13M12 20q.225 0 .363-.125t.137-.325q0-.35-.375-.825T11.75 17.3q0-1.05.725-1.675T14.25 15H16q1.65 0 2.825-.962T20 11.05q0-3.025-2.312-5.038T12.2 4Q8.8 4 6.4 6.325T4 12q0 3.325 2.338 5.663T12 20"
+				></path></symbol
+			><use href="#ai:material-symbols:palette-outline"></use>
 		</svg>
 	</button>
 	<div
 		class="bg-global-bg border-muted absolute top-12 right-0 z-50 hidden rounded-lg border p-3 shadow-lg"
 		id="color-picker-panel"
 	>
-		<p class="text-muted mb-2 text-xs font-semibold">Theme Color</p>
-		<div class="flex gap-2" id="color-swatches"></div>
+		<div class="mb-2 flex items-center justify-between">
+			<p class="text-muted text-xs font-semibold">Theme Color</p>
+			<span class="text-muted text-xs tabular-nums" id="hue-value">0°</span>
+		</div>
+		<input type="range" min="0" max="360" value="350" class="hue-slider w-48" id="hue-slider" />
 	</div>
 </theme-color-picker>
 
+<style>
+	.hue-slider {
+		-webkit-appearance: none;
+		appearance: none;
+		height: 12px;
+		border-radius: 6px;
+		background: linear-gradient(
+			to right,
+			oklch(60% 0.18 0),
+			oklch(60% 0.18 60),
+			oklch(60% 0.18 120),
+			oklch(60% 0.18 180),
+			oklch(60% 0.18 240),
+			oklch(60% 0.18 300),
+			oklch(60% 0.18 360)
+		);
+		outline: none;
+		cursor: pointer;
+	}
+	.hue-slider::-webkit-slider-thumb {
+		-webkit-appearance: none;
+		appearance: none;
+		width: 18px;
+		height: 18px;
+		border-radius: 50%;
+		background: white;
+		border: 2px solid #888;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+		cursor: pointer;
+	}
+	.hue-slider::-moz-range-thumb {
+		width: 18px;
+		height: 18px;
+		border-radius: 50%;
+		background: white;
+		border: 2px solid #888;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+		cursor: pointer;
+	}
+</style>
+
 <script>
 	class ThemeColorPicker extends HTMLElement {
-		// Each preset defines light + dark mode accent/link/quote colors
-		static presets: Record<
-			string,
-			{
-				swatch: string;
-				light: Record<string, string>;
-				dark: Record<string, string>;
-			}
-		> = {
-			red: {
-				swatch: "oklch(55.27% 0.195 19.06)",
-				light: {
-					"--color-accent": "oklch(55.27% 0.195 19.06)",
-					"--color-link": "oklch(55.44% 0.0431 185.69)",
-					"--color-quote": "oklch(55.27% 0.195 19.06)",
-				},
-				dark: {
-					"--color-accent": "oklch(76% 0.11 235)",
-					"--color-link": "oklch(78% 0.08 245)",
-					"--color-quote": "oklch(90% 0.08 230)",
-				},
-			},
-			blue: {
-				swatch: "oklch(55% 0.18 250)",
-				light: {
-					"--color-accent": "oklch(55% 0.18 250)",
-					"--color-link": "oklch(50% 0.12 250)",
-					"--color-quote": "oklch(55% 0.18 250)",
-				},
-				dark: {
-					"--color-accent": "oklch(76% 0.11 250)",
-					"--color-link": "oklch(78% 0.08 250)",
-					"--color-quote": "oklch(90% 0.08 250)",
-				},
-			},
-			purple: {
-				swatch: "oklch(55% 0.18 300)",
-				light: {
-					"--color-accent": "oklch(55% 0.18 300)",
-					"--color-link": "oklch(50% 0.12 300)",
-					"--color-quote": "oklch(55% 0.18 300)",
-				},
-				dark: {
-					"--color-accent": "oklch(76% 0.11 300)",
-					"--color-link": "oklch(78% 0.08 300)",
-					"--color-quote": "oklch(90% 0.08 300)",
-				},
-			},
-			green: {
-				swatch: "oklch(55% 0.18 150)",
-				light: {
-					"--color-accent": "oklch(55% 0.18 150)",
-					"--color-link": "oklch(50% 0.12 150)",
-					"--color-quote": "oklch(55% 0.18 150)",
-				},
-				dark: {
-					"--color-accent": "oklch(76% 0.11 150)",
-					"--color-link": "oklch(78% 0.08 150)",
-					"--color-quote": "oklch(90% 0.08 150)",
-				},
-			},
-			orange: {
-				swatch: "oklch(60% 0.16 55)",
-				light: {
-					"--color-accent": "oklch(60% 0.16 55)",
-					"--color-link": "oklch(55% 0.12 55)",
-					"--color-quote": "oklch(60% 0.16 55)",
-				},
-				dark: {
-					"--color-accent": "oklch(76% 0.11 55)",
-					"--color-link": "oklch(78% 0.08 55)",
-					"--color-quote": "oklch(90% 0.08 55)",
-				},
-			},
-			pink: {
-				swatch: "oklch(60% 0.18 350)",
-				light: {
-					"--color-accent": "oklch(60% 0.18 350)",
-					"--color-link": "oklch(55% 0.12 350)",
-					"--color-quote": "oklch(60% 0.18 350)",
-				},
-				dark: {
-					"--color-accent": "oklch(76% 0.11 350)",
-					"--color-link": "oklch(78% 0.08 350)",
-					"--color-quote": "oklch(90% 0.08 350)",
-				},
-			},
-		};
-
 		connectedCallback() {
 			const button = this.querySelector<HTMLButtonElement>("button");
 			const panel = this.querySelector<HTMLDivElement>("#color-picker-panel");
-			const swatchContainer = this.querySelector<HTMLDivElement>("#color-swatches");
+			const slider = this.querySelector<HTMLInputElement>("#hue-slider");
+			const hueLabel = this.querySelector<HTMLSpanElement>("#hue-value");
 
-			if (!button || !panel || !swatchContainer) return;
-
-			// Build swatches
-			for (const [name, preset] of Object.entries(ThemeColorPicker.presets)) {
-				const swatch = document.createElement("button");
-				swatch.type = "button";
-				swatch.title = name;
-				swatch.className =
-					"h-7 w-7 rounded-full cursor-pointer border-2 border-transparent hover:scale-110 transition-transform";
-				swatch.style.backgroundColor = preset.swatch;
-
-				const stored = localStorage.getItem("theme-color");
-				if (stored === name) {
-					swatch.classList.remove("border-transparent");
-					swatch.classList.add("border-global-text", "ring-2", "ring-offset-1");
-				}
-
-				swatch.addEventListener("click", () => {
-					this.applyPreset(name);
-					// Update selected state
-					swatchContainer.querySelectorAll("button").forEach((b) => {
-						b.classList.remove("border-global-text", "ring-2", "ring-offset-1");
-						b.classList.add("border-transparent");
-					});
-					swatch.classList.remove("border-transparent");
-					swatch.classList.add("border-global-text", "ring-2", "ring-offset-1");
-				});
-
-				swatchContainer.appendChild(swatch);
-			}
+			if (!button || !panel || !slider || !hueLabel) return;
 
 			// Toggle panel
 			button.addEventListener("click", (e) => {
@@ -171,45 +93,51 @@
 				}
 			});
 
-			// Restore saved color on load
-			const saved = localStorage.getItem("theme-color");
-			if (saved && ThemeColorPicker.presets[saved]) {
-				this.applyPreset(saved);
+			// Slider input
+			slider.addEventListener("input", () => {
+				const hue = Number(slider.value);
+				hueLabel.textContent = `${hue}°`;
+				this.applyHue(hue);
+				localStorage.setItem("theme-color-hue", String(hue));
+			});
+
+			// Restore saved hue
+			const saved = localStorage.getItem("theme-color-hue");
+			if (saved !== null) {
+				const hue = Number(saved);
+				slider.value = String(hue);
+				hueLabel.textContent = `${hue}°`;
+				this.applyHue(hue);
 			}
 
 			// Re-apply on theme (light/dark) change
 			document.addEventListener("theme-change", () => {
-				// Small delay to let data-theme attribute update first
 				requestAnimationFrame(() => {
-					const saved = localStorage.getItem("theme-color");
-					if (saved && ThemeColorPicker.presets[saved]) {
-						this.applyPreset(saved);
-					}
+					const saved = localStorage.getItem("theme-color-hue");
+					if (saved !== null) this.applyHue(Number(saved));
 				});
 			});
 
 			// Re-apply after view transitions
 			document.addEventListener("astro:after-swap", () => {
-				const saved = localStorage.getItem("theme-color");
-				if (saved && ThemeColorPicker.presets[saved]) {
-					this.applyPreset(saved);
-				}
+				const saved = localStorage.getItem("theme-color-hue");
+				if (saved !== null) this.applyHue(Number(saved));
 			});
 		}
 
-		applyPreset(name: string) {
-			const preset = ThemeColorPicker.presets[name];
-			if (!preset) return;
-
+		applyHue(hue: number) {
 			const root = document.documentElement;
 			const isDark = root.getAttribute("data-theme") === "dark";
-			const colors = isDark ? preset.dark : preset.light;
 
-			for (const [prop, value] of Object.entries(colors)) {
-				root.style.setProperty(prop, value);
+			if (isDark) {
+				root.style.setProperty("--color-accent", `oklch(76% 0.11 ${hue})`);
+				root.style.setProperty("--color-link", `oklch(78% 0.08 ${hue})`);
+				root.style.setProperty("--color-quote", `oklch(90% 0.08 ${hue})`);
+			} else {
+				root.style.setProperty("--color-accent", `oklch(55% 0.18 ${hue})`);
+				root.style.setProperty("--color-link", `oklch(50% 0.12 ${hue})`);
+				root.style.setProperty("--color-quote", `oklch(55% 0.18 ${hue})`);
 			}
-
-			localStorage.setItem("theme-color", name);
 		}
 	}
 
