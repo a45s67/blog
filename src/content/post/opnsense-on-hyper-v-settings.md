@@ -1,7 +1,7 @@
 ---
 title: "OPNsense on Hyper-V 建立惡意樣本分析環境"
 description: "在 Hyper-V 上使用 OPNsense 建立惡意樣本分析環境的設定記錄，包含 VPN 導流、Kill Switch、mDNS 及路由迴圈除錯。"
-publishDate: "2025-03-28"
+publishDate: "2026-03-28"
 tags: ["Security", "Networking"]
 ---
 
